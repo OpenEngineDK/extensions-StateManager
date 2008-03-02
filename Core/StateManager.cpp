@@ -9,9 +9,12 @@
 
 #include <Core/StateManager.h>
 #include <Core/Exceptions.h>
+#include <Logging/Logger.h>
 
 namespace OpenEngine {
 namespace Core {
+
+using namespace OpenEngine::Logging;
 
 StateManager::StateManager(string name, IModule* initState) : numberOfStates(0){
     stateList = map<string, IModule*>();
@@ -42,12 +45,13 @@ void StateManager::AddState(string name, IModule* gs){
 }
 
 void StateManager::ChangeState(string name){
+    curState->Deinitialize();
+
     map<string, IModule*>::iterator iter = stateList.find(name);
     if( iter != stateList.end() ) {
-        curState->Deinitialize();
-        throw Exception("State changed to: " + iter->first);
         curState = iter->second;
         curState->Initialize();
+        logger.info << "State changed to: " << iter->first << logger.end;
     }
     else
         throw Exception("State does not exists: " + name);
