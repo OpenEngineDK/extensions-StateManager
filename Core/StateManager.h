@@ -10,7 +10,10 @@
 #ifndef _STATE_MANAGER_H_
 #define _STATE_MANAGER_H_
 
+#include <Core/IListener.h>
 #include <Core/IModule.h>
+#include <Core/IState.h>
+#include <Core/EngineEvents.h>
 #include <map>
 #include <string>
 
@@ -22,22 +25,20 @@ using namespace std;
 class StateManager : public IModule {
 public:
     int numberOfStates;
-    IModule* curState;
-    map<string, IModule*> stateList;
+    IState* curState;
+    map<string, IState*> stateList;
 
 public:
-    StateManager(string name, IModule* initState);
+    StateManager();
     ~StateManager();
 
-    void AddState(string name, IModule* gs);
+    void AddState(string name, IState* gs);
+    void AddStateAsInitial(string name, IState* gs);
     void ChangeState(string name);
     
-    void Initialize();
-    void Process(const float deltaTime, const float percent);
-    void Deinitialize();
-    bool IsTypeOf(const std::type_info& inf);
-
-
+    void Handle(InitializeEventArg arg);
+    void Handle(ProcessEventArg arg);
+    void Handle(DeinitializeEventArg arg);
 };
 
 } // NS Core

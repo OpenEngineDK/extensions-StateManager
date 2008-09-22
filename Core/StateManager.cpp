@@ -16,39 +16,40 @@ namespace Core {
 
 using namespace OpenEngine::Logging;
 
-StateManager::StateManager(string name, IModule* initState) : numberOfStates(0){
-    stateList = map<string, IModule*>();
-    stateList[name] = initState;
-    curState = initState;
+StateManager::StateManager() 
+  : numberOfStates(0) {
+    stateList = map<string, IState*>();
 }
     
-StateManager::~StateManager(){
+StateManager::~StateManager() {
 }
 
-void StateManager::Initialize(){
+void StateManager::Handle(InitializeEventArg arg) {
     curState->Initialize();
 }
  
-void StateManager::Process(const float deltaTime, const float percent) {
-    curState->Process(deltaTime,percent);
+void StateManager::Handle(ProcessEventArg arg) {
+    curState->Process(arg);;
 }
 
-void StateManager::Deinitialize() {
+void StateManager::Handle(DeinitializeEventArg arg) {
+    //@todo: what to do here?
 }
 
-bool StateManager::IsTypeOf(const std::type_info& inf){
-    return (typeid(StateManager) == inf);
-}
-
-void StateManager::AddState(string name, IModule* gs){
+void StateManager::AddState(string name, IState* gs) {
     stateList[name] = gs;
 }
 
-void StateManager::ChangeState(string name){
+void StateManager::AddStateAsInitial(string name, IState* gs) {
+    curState = gs;
+    AddState(name,gs);
+}
+
+void StateManager::ChangeState(string name) {
     curState->Deinitialize();
 
-    map<string, IModule*>::iterator iter = stateList.find(name);
-    if( iter != stateList.end() ) {
+    map<string, IState*>::iterator iter = stateList.find(name);
+    if (iter != stateList.end()) {
         curState = iter->second;
         curState->Initialize();
         logger.info << "State changed to: " << iter->first << logger.end;
