@@ -33,7 +33,7 @@ public:
     ~StateManager();
 
     void AddState(string name, IState* gs);
-    void AddStateAsInitial(string name, IState* gs);
+    void SetInitialState(string name);
     void ChangeState(string name);
     
     void Handle(InitializeEventArg arg);

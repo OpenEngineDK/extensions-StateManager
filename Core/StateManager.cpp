@@ -40,9 +40,10 @@ void StateManager::AddState(string name, IState* gs) {
     stateList[name] = gs;
 }
 
-void StateManager::AddStateAsInitial(string name, IState* gs) {
-    curState = gs;
-    AddState(name,gs);
+void StateManager::SetInitialState(string name) {
+    curState = stateList[name];
+    if (curState == NULL)
+        throw Core::Exception("Unknown state");
 }
 
 void StateManager::ChangeState(string name) {
